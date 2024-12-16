@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTrader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">SmartTrader Console</h1>
+        <p class="text-center">Predict stock prices and trading strategies</p>
+        
+        <form id="predict-form" class="mt-4">
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" id="start_date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Predict</button>
+        </form>
+
+        <div id="results" class="mt-5 d-none">
+            <h3>Predicted Prices for the Next 5 Business Days</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Highest Price</th>
+                        <th>Lowest Price</th>
+                        <th>Average Closing Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="highest-price"></td>
+                        <td id="lowest-price"></td>
+                        <td id="average-price"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Recommended Trading Strategy</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="strategies"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+        document.getElementById('predict-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const startDate = document.getElementById('start_date').value;
+
+            try {
+                const response = await axios.post('/predict', { start_date: startDate });
+                const data = response.data;
+
+                document.getElementById('highest-price').textContent = data.highest_price.toFixed(2);
+                document.getElementById('lowest-price').textContent = data.lowest_price.toFixed(2);
+                document.getElementById('average-price').textContent = data.average_price.toFixed(2);
+
+                const strategiesTable = document.getElementById('strategies');
+                strategiesTable.innerHTML = '';
+                data.strategies.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${row.date}</td><td>${row.action}</td>`;
+                    strategiesTable.appendChild(tr);
+                });
+
+                document.getElementById('results').classList.remove('d-none');
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while processing your request.');
+            }
+        });
+    </script>
+</body>
+</html>

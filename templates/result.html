@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTrader Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            text-align: center;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>SmartTrader Predictions</h1>
+    <p>You selected {{ result['dates'][0] }} as today.</p>
+    <h2>Predicted Prices:</h2>
+    <table>
+        <tr>
+            <th>Highest Price</th>
+            <th>Lowest Price</th>
+            <th>Average Closing Price</th>
+        </tr>
+        <tr>
+            <td>{{ result['predicted_high'] }}</td>
+            <td>{{ result['predicted_low'] }}</td>
+            <td>{{ result['predicted_avg'] }}</td>
+        </tr>
+    </table>
+
+    <h2>Recommended Trading Strategy:</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+        {% for date, action in zip(result['dates'], result['actions']) %}
+        <tr>
+            <td>{{ date }}</td>
+            <td>{{ action }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

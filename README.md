@@ -1,1 +1,1 @@
-# SmartTrader_Team8
+# SmartTraderTeam8
