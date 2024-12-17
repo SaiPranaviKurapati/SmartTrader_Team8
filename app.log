@@ -1,0 +1,93 @@
+2024-12-16 15:42:05,929 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:42:05,950 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-16 15:42:05,950 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-16 15:42:05,952 - INFO -  * Restarting with stat
+2024-12-16 15:42:07,871 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:42:07,881 - WARNING -  * Debugger is active!
+2024-12-16 15:42:07,888 - INFO -  * Debugger PIN: 698-865-799
+2024-12-16 15:42:15,591 - INFO - 127.0.0.1 - - [16/Dec/2024 15:42:15] "GET / HTTP/1.1" 200 -
+2024-12-16 15:42:22,148 - INFO - Processing prediction request for chosen date: 2024-12-03
+2024-12-16 15:42:22,161 - INFO - Fetching data for ticker NVDA from 2024-12-03 to 2024-12-08.
+2024-12-16 15:42:22,162 - DEBUG - Entering download()
+2024-12-16 15:42:22,162 - DEBUG - Disabling multithreading because DEBUG logging enabled
+2024-12-16 15:42:22,163 - DEBUG -  Entering history()
+2024-12-16 15:42:22,167 - DEBUG - ('CREATE TABLE IF NOT EXISTS "_kv" ("key" VARCHAR(255) NOT NULL PRIMARY KEY, "value" VARCHAR(255)) WITHOUT ROWID', [])
+2024-12-16 15:42:22,168 - DEBUG - ('SELECT "t1"."key", "t1"."value" FROM "_kv" AS "t1" WHERE ("t1"."key" = ?) LIMIT ? OFFSET ?', ['NVDA', 1, 0])
+2024-12-16 15:42:22,290 - DEBUG -   Entering history()
+2024-12-16 15:42:22,299 - DEBUG - NVDA: Yahoo GET parameters: {'period1': '2024-10-04 00:00:00-04:00', 'period2': '2024-12-08 00:00:00-05:00', 'interval': '1d', 'includePrePost': False, 'events': 'div,splits,capitalGains'}
+2024-12-16 15:42:22,299 - DEBUG -    Entering get()
+2024-12-16 15:42:22,300 - DEBUG -     Entering _make_request()
+2024-12-16 15:42:22,300 - DEBUG - url=https://query2.finance.yahoo.com/v8/finance/chart/NVDA
+2024-12-16 15:42:22,300 - DEBUG - params=frozendict.frozendict({'period1': 1728014400, 'period2': 1733634000, 'interval': '1d', 'includePrePost': False, 'events': 'div,splits,capitalGains'})
+2024-12-16 15:42:22,300 - DEBUG -      Entering _get_cookie_and_crumb()
+2024-12-16 15:42:22,300 - DEBUG - cookie_mode = 'basic'
+2024-12-16 15:42:22,301 - DEBUG -       Entering _get_cookie_and_crumb_basic()
+2024-12-16 15:42:22,307 - DEBUG - ('CREATE TABLE IF NOT EXISTS "_cookieschema" ("strategy" VARCHAR(255) NOT NULL PRIMARY KEY, "fetch_date" DATETIME NOT NULL, "cookie_bytes" BLOB NOT NULL) WITHOUT ROWID', [])
+2024-12-16 15:42:22,308 - DEBUG - ('SELECT "t1"."strategy", "t1"."fetch_date", "t1"."cookie_bytes" FROM "_cookieschema" AS "t1" WHERE ("t1"."strategy" = ?) LIMIT ? OFFSET ?', ['basic', 1, 0])
+2024-12-16 15:42:22,308 - DEBUG - loaded persistent cookie
+2024-12-16 15:42:22,309 - DEBUG - reusing cookie
+2024-12-16 15:42:22,317 - DEBUG - Starting new HTTPS connection (1): query1.finance.yahoo.com:443
+2024-12-16 15:42:22,458 - DEBUG - https://query1.finance.yahoo.com:443 "GET /v1/test/getcrumb HTTP/11" 200 11
+2024-12-16 15:42:22,459 - DEBUG - crumb = 'vp0bz9CrQVm'
+2024-12-16 15:42:22,459 - DEBUG -       Exiting _get_cookie_and_crumb_basic()
+2024-12-16 15:42:22,459 - DEBUG -      Exiting _get_cookie_and_crumb()
+2024-12-16 15:42:22,462 - DEBUG - Starting new HTTPS connection (1): query2.finance.yahoo.com:443
+2024-12-16 15:42:22,576 - DEBUG - https://query2.finance.yahoo.com:443 "GET /v8/finance/chart/NVDA?period1=1728014400&period2=1733634000&interval=1d&includePrePost=False&events=div%2Csplits%2CcapitalGains&crumb=vp0bz9CrQVm HTTP/11" 200 2215
+2024-12-16 15:42:22,577 - DEBUG - response code=200
+2024-12-16 15:42:22,577 - DEBUG -     Exiting _make_request()
+2024-12-16 15:42:22,577 - DEBUG -    Exiting get()
+2024-12-16 15:42:22,581 - DEBUG - NVDA: yfinance received OHLC data: 2024-10-04 13:30:00 -> 2024-12-06 14:30:00
+2024-12-16 15:42:22,584 - DEBUG - NVDA: OHLC after cleaning: 2024-10-04 09:30:00-04:00 -> 2024-12-06 09:30:00-05:00
+2024-12-16 15:42:22,600 - DEBUG - NVDA: OHLC after combining events: 2024-10-04 00:00:00-04:00 -> 2024-12-06 00:00:00-05:00
+2024-12-16 15:42:22,605 - DEBUG - NVDA: yfinance returning OHLC: 2024-10-04 00:00:00-04:00 -> 2024-12-06 00:00:00-05:00
+2024-12-16 15:42:22,605 - DEBUG -   Exiting history()
+2024-12-16 15:42:22,605 - DEBUG -  Exiting history()
+2024-12-16 15:42:22,609 - DEBUG - Exiting download()
+2024-12-16 15:42:22,639 - INFO - Features generated successfully for ticker NVDA.
+2024-12-16 15:42:22,656 - DEBUG - Features for prediction: [[ 2.74867908e-03  1.37032001e+02  1.40682999e+02  1.40860745e+00
+   1.38250000e+02  1.35339996e+02  1.41949997e+02  4.11197499e+01
+   1.39873883e+02  1.51971517e+02  1.42673499e+02  1.33375482e+02]
+ [ 1.17578415e-02  1.37879999e+02  1.40693999e+02  1.85317318e+00
+   1.38630005e+02  1.38250000e+02  1.36020004e+02  3.88254839e+01
+   1.39944085e+02  1.51730294e+02  1.42883999e+02  1.34037704e+02]
+ [ 3.47925643e-02  1.39523999e+02  1.40506999e+02  3.60587462e+00
+   1.40259995e+02  1.38630005e+02  1.36919998e+02  4.85434319e+01
+   1.40888797e+02  1.51930626e+02  1.43145499e+02  1.34360371e+02]
+ [-5.51204571e-04  1.41467999e+02  1.40423999e+02  3.40055303e+00
+   1.45139999e+02  1.40259995e+02  1.35339996e+02  4.77853082e+01
+   1.41647197e+02  1.51874038e+02  1.43117999e+02  1.34361959e+02]
+ [-1.80614584e-02  1.42306000e+02  1.40000999e+02  2.88674082e+00
+   1.45059998e+02  1.45139999e+02  1.38250000e+02  5.06350178e+01
+   1.41791344e+02  1.51122992e+02  1.42795998e+02  1.34469005e+02]]
+2024-12-16 15:42:22,665 - INFO - Predictions: [0.95567304 0.95567304 0.95567304 0.95567304 0.95567304]
+2024-12-16 15:42:22,667 - INFO - 127.0.0.1 - - [16/Dec/2024 15:42:22] "POST /predict HTTP/1.1" 200 -
+2024-12-16 15:42:57,948 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:42:57,965 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-16 15:42:57,965 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-16 15:42:57,966 - INFO -  * Restarting with stat
+2024-12-16 15:42:59,704 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:42:59,713 - WARNING -  * Debugger is active!
+2024-12-16 15:42:59,719 - INFO -  * Debugger PIN: 698-865-799
+2024-12-16 15:43:27,281 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:43:27,298 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-16 15:43:27,298 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-16 15:43:27,300 - INFO -  * Restarting with stat
+2024-12-16 15:43:29,044 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:43:29,051 - WARNING -  * Debugger is active!
+2024-12-16 15:43:29,056 - INFO -  * Debugger PIN: 698-865-799
+2024-12-16 15:48:01,192 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:48:01,214 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-12-16 15:48:01,214 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-16 15:48:01,215 - INFO -  * Restarting with stat
+2024-12-16 15:48:03,176 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:48:03,186 - WARNING -  * Debugger is active!
+2024-12-16 15:48:03,191 - INFO -  * Debugger PIN: 698-865-799
+2024-12-16 15:50:08,379 - INFO -  * Detected change in 'C:\\Users\\kurap\\OneDrive\\Desktop\\SmartTrader_Team8\\app1.py', reloading
+2024-12-16 15:50:08,622 - INFO -  * Restarting with stat
+2024-12-16 15:50:10,532 - INFO - XGBoost model loaded successfully.
+2024-12-16 15:50:10,544 - WARNING -  * Debugger is active!
+2024-12-16 15:50:10,549 - INFO -  * Debugger PIN: 698-865-799

@@ -3,82 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartTrader</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <title>SmartTrader - Predict Share Prices</title>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mt-4">SmartTrader Console</h1>
-        <p class="text-center">Predict stock prices and trading strategies</p>
-        
-        <form id="predict-form" class="mt-4">
-            <div class="mb-3">
-                <label for="start_date" class="form-label">Start Date</label>
-                <input type="date" id="start_date" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Predict</button>
-        </form>
+    <h1>SmartTrader - Predict Share Prices</h1>
+    <label for="date-picker">Select a Date:</label>
+    <input type="date" id="date-picker" name="date-picker">
+    <button onclick="predictPrices()">Predict Prices</button>
 
-        <div id="results" class="mt-5 d-none">
-            <h3>Predicted Prices for the Next 5 Business Days</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Highest Price</th>
-                        <th>Lowest Price</th>
-                        <th>Average Closing Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="highest-price"></td>
-                        <td id="lowest-price"></td>
-                        <td id="average-price"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <h3>Recommended Trading Strategy</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="strategies"></tbody>
-            </table>
-        </div>
-    </div>
+    <h2>Predicted Prices</h2>
+    <div id="results"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
-        document.getElementById('predict-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
+        async function predictPrices() {
+            const dateInput = document.getElementById("date-picker").value;
+            const resultsDiv = document.getElementById("results");
 
-            const startDate = document.getElementById('start_date').value;
+            if (!dateInput) {
+                alert("Please select a date.");
+                return;
+            }
 
             try {
-                const response = await axios.post('/predict', { start_date: startDate });
-                const data = response.data;
-
-                document.getElementById('highest-price').textContent = data.highest_price.toFixed(2);
-                document.getElementById('lowest-price').textContent = data.lowest_price.toFixed(2);
-                document.getElementById('average-price').textContent = data.average_price.toFixed(2);
-
-                const strategiesTable = document.getElementById('strategies');
-                strategiesTable.innerHTML = '';
-                data.strategies.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${row.date}</td><td>${row.action}</td>`;
-                    strategiesTable.appendChild(tr);
+                // Send POST request to backend
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chosen_date: dateInput })
                 });
 
-                document.getElementById('results').classList.remove('d-none');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Display results
+                    let resultHtml = "<ul>";
+                    data.dates.forEach((date, index) => {
+                        resultHtml += `<li>${date}: $${data.predicted_prices[index].toFixed(2)}</li>`;
+                    });
+                    resultHtml += "</ul>";
+                    resultsDiv.innerHTML = resultHtml;
+                } else {
+                    resultsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                }
             } catch (error) {
-                console.error(error);
-                alert('An error occurred while processing your request.');
+                console.error("Error fetching data:", error);
+                resultsDiv.innerHTML = `<p>Failed to fetch predictions. Try again later.</p>`;
             }
-        });
+        }
     </script>
 </body>
 </html>

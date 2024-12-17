@@ -1,0 +1,94 @@
+from flask import Flask, request, jsonify, render_template
+import pickle
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+from xgb_wrapper import XGBRegressorWrapper
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Load models and scalers
+with open("model/best_xgb_model.pkl", "rb") as xgb_file:
+    xgb_model = pickle.load(xgb_file)
+with open("model/scaler_X.pkl", "rb") as scaler_X_file:
+    scaler_X = pickle.load(scaler_X_file)
+with open("model/scaler_y.pkl", "rb") as scaler_y_file:
+    scaler_y = pickle.load(scaler_y_file)
+
+# Simulate Open and Close Prices
+def simulate_open_close_prices(selected_date):
+    """ Simulates Open and Close prices for NVDA and NVDQ for 5 business days. """
+    today = datetime.strptime(selected_date, "%Y-%m-%d")
+    dates = []
+    for i in range(1, 6):
+        next_day = today + timedelta(days=i)
+        if next_day.weekday() < 5:  # Ensure only business days (Mon-Fri)
+            dates.append(next_day.strftime("%Y-%m-%d"))
+
+    data = {
+        "Date": dates,
+        "Open_NVDA": np.random.uniform(150, 170, size=len(dates)),
+        "Close_NVDA": np.random.uniform(150, 170, size=len(dates)),
+        "Open_NVDQ": np.random.uniform(140, 160, size=len(dates)),
+        "Close_NVDQ": np.random.uniform(140, 160, size=len(dates))
+    }
+    return pd.DataFrame(data)
+
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("index.html")
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    try:
+        # Get selected date from frontend
+        data = request.json
+        selected_date = data.get("date")
+        if not selected_date:
+            return jsonify({"error": "No date provided"}), 400
+
+        # Simulate open and close prices for 5 days starting from selected date
+        prices_df = simulate_open_close_prices(selected_date)
+
+        # Decision logic for actions (BULLISH, BEARISH, IDLE)
+        actions = []
+        for i, row in prices_df.iterrows():
+            if row['Close_NVDA'] > row['Open_NVDQ'] * 1.05:  # BULLISH threshold
+                actions.append("BULLISH")
+            elif row['Close_NVDQ'] > row['Open_NVDA'] * 1.05:  # BEARISH threshold
+                actions.append("BEARISH")
+            else:
+                actions.append("IDLE")
+
+        # Compute final portfolio value
+        nvda_shares = 10000
+        nvdq_shares = 100000
+
+        for i, action in enumerate(actions):
+            if action == "BULLISH":
+                nvda_shares += nvdq_shares * (prices_df['Open_NVDQ'][i] / prices_df['Open_NVDA'][i])
+                nvdq_shares = 0
+            elif action == "BEARISH":
+                nvdq_shares += nvda_shares * (prices_df['Open_NVDA'][i] / prices_df['Open_NVDQ'][i])
+                nvda_shares = 0
+
+        final_value = nvda_shares * prices_df['Close_NVDA'].iloc[-1] + nvdq_shares * prices_df['Close_NVDQ'].iloc[-1]
+
+        # Response
+        response = {
+            "dates": prices_df['Date'].tolist(),
+            "open_nvda": prices_df['Open_NVDA'].tolist(),
+            "close_nvda": prices_df['Close_NVDA'].tolist(),
+            "open_nvdq": prices_df['Open_NVDQ'].tolist(),
+            "close_nvdq": prices_df['Close_NVDQ'].tolist(),
+            "actions": actions,
+            "final_value": round(final_value, 2)
+        }
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)

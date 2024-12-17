@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTrader - Predict Share Prices</title>
+</head>
+<body>
+    <h1>SmartTrader - Predict Share Prices</h1>
+    <label for="date-picker">Select a Date:</label>
+    <input type="date" id="date-picker" name="date-picker">
+    <button onclick="predictPrices()">Predict Prices</button>
+
+    <h2>Predicted Prices</h2>
+    <div id="results"></div>
+
+    <script>
+        async function predictPrices() {
+            const dateInput = document.getElementById("date-picker").value;
+            const resultsDiv = document.getElementById("results");
+
+            if (!dateInput) {
+                alert("Please select a date.");
+                return;
+            }
+
+            try {
+                // Send POST request to backend
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chosen_date: dateInput })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Display results
+                    let resultHtml = "<ul>";
+                    data.dates.forEach((date, index) => {
+                        resultHtml += `<li>${date}: $${data.predicted_prices[index].toFixed(2)}</li>`;
+                    });
+                    resultHtml += "</ul>";
+                    resultsDiv.innerHTML = resultHtml;
+                } else {
+                    resultsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                resultsDiv.innerHTML = `<p>Failed to fetch predictions. Try again later.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTrader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">SmartTrader Console</h1>
+        <p class="text-center">Predict stock prices and recommend trading strategies</p>
+        
+        <form id="predict-form" class="mt-4">
+            <!-- Date Picker -->
+            <div class="mb-3">
+                <label for="date" class="form-label">Select Today’s Date</label>
+                <input type="date" id="date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Predict</button>
+        </form>
+
+        <div id="results" class="mt-5 d-none">
+            <h3>Predicted Prices and Actions</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Open NVDA</th>
+                        <th>Close NVDA</th>
+                        <th>Open NVDQ</th>
+                        <th>Close NVDQ</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="predictions"></tbody>
+            </table>
+            <h3>Final Portfolio Value</h3>
+            <p id="final-value"></p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+        document.getElementById('predict-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const selectedDate = document.getElementById('date').value;
+
+            try {
+                const response = await axios.post('/predict', { date: selectedDate });
+                const data = response.data;
+
+                const predictionsTable = document.getElementById('predictions');
+                predictionsTable.innerHTML = '';
+                data.dates.forEach((date, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${date}</td>
+                        <td>${data.open_nvda[index].toFixed(2)}</td>
+                        <td>${data.close_nvda[index].toFixed(2)}</td>
+                        <td>${data.open_nvdq[index].toFixed(2)}</td>
+                        <td>${data.close_nvdq[index].toFixed(2)}</td>
+                        <td>${data.actions[index]}</td>
+                    `;
+                    predictionsTable.appendChild(tr);
+                });
+
+                document.getElementById('final-value').textContent = `Final Portfolio Value: $${data.final_value}`;
+                document.getElementById('results').classList.remove('d-none');
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while processing your request.');
+            }
+        });
+    </script>
+</body>
+</html> 
